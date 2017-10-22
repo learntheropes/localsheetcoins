@@ -1,8 +1,15 @@
 // PUBLIC
+
 function lbcCountries(){
  var response = lbcRequest_("none", "get", "/api/countrycodes/");
  var data = response.content.data.cc_list;
  writeArrayToColumn_(data,"Sheet7",1);
+}
+
+function lbcEquation(equation){
+ var response = lbcRequest_("none", "get", "/equation/" + equation);
+ Logger.log(response.content)
+ return response.content
 }
 
 function lbcApiToSheet(apiMethods){
@@ -148,7 +155,9 @@ function lbcRequest_(scope, method, endpoint, payload) {
   }
   
   var request = UrlFetchApp.fetch(lbc_baseUrl.concat(endpoint), options);
+  
   // fetchLog_(request) ;
+  
   var response = {
     statusCode: request.getResponseCode(),
     content: JSON.parse(request.getContentText())

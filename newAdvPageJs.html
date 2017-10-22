@@ -1,52 +1,97 @@
 <script>
-  window.onload = function(){
-    google.script.run.withSuccessHandler(setMethodOptions).lbcPaymentMethods("client");
-    google.script.run.withSuccessHandler(setCountries).getCountries("client");
-  };
+/**
+ * Call the server to get list of payment methods and countries to asynchronous fill online_provider and countrycode dropdowns options on sidebar load.
+ */
+window.onload = function(){
+  google.script.run.withSuccessHandler(setMethodOptions).lbcPaymentMethods("client");
+  google.script.run.withSuccessHandler(setCountries).getCountries("client");
+};
+
+
+/**
+ * Set online_provider dropdown options.
+ */
+window.setMethodOptions = function(methods){
+  window.methods = methods;
+  var methodOptions = "<option value='null'>Select</option>";
+  Object.keys(methods).sort().forEach(function(method){
+    methodOptions += "<option value='" + methods[method]["code"] + "'>" + methods[method]["name"] + "</option>";   
+  })
+  document.getElementById("online_provider").innerHTML = methodOptions;
+};
+
+
+/**
+ * Set countrycode dropdown options.
+ */
+window.setCountries = function(countries){
+  var countryOptions = "<option value='null'>Select</option>";
+  Object.keys(countries).sort().forEach(function(country){
+    countryOptions += "<option value='" + countries[country]["code"] + "'>" + countries[country]["code"] + " " + countries[country]["name"] + "</option>";   
+  })
+  document.getElementById("countrycode").innerHTML = countryOptions;
+};
   
-  window.setCountries = function(countries){
-    var countryOptions = "<option value='null'>Select</option>";
-    Object.keys(countries).sort().forEach(function(country){
-      countryOptions += "<option value='" + countries[country]["code"] + "'>" + countries[country]["code"] + " " + countries[country]["name"] + "</option>";   
-    })
-    document.getElementById("countrycode").innerHTML = countryOptions;
-  };
-  
-  window.setMethodOptions = function(methods){
-    window.methods = methods;
-    var methodOptions = "<option value='null'>Select</option>";
-    Object.keys(methods).sort().forEach(function(method){
-      methodOptions += "<option value='" + methods[method]["code"] + "'>" + methods[method]["name"] + "</option>";   
-    })
-    document.getElementById("online_provider").innerHTML = methodOptions;
-  };
-  
-  
-  document.getElementById("showAdvancePriceDialog").onclick = function(){
-    google.script.run.withSuccessHandler().showAdvancePriceDialog();
-  }
-  
-  
-  document.getElementById("online_provider").onchange = function(){
+
+/**
+ * Listen for changes on online_provider dropdown and update available currency and bank_name_choices dropdowns options.
+ */
+document.getElementById("online_provider").onchange = function(){
       
-    var currencyOptions = "<option value=''>Select</option>";
-      window.methods[this.value]["currencies"].sort().forEach(function(method){
-      currencyOptions += "<option value='" + method + "'>" + method + "</option>";   
+  var currencyOptions = "<option value=''>Select</option>";
+    window.methods[this.value]["currencies"].sort().forEach(function(currency){
+    currencyOptions += "<option value='" + currency + "'>" + currency + "</option>";   
+  });
+  document.getElementById("currency").innerHTML = currencyOptions;
+    
+  if (window.methods[this.value]["bank_name_choices"] != null){
+    var bankOptions = "<option value='null'>Select</option>";
+    window.methods[this.value]["bank_name_choices"].sort().forEach(function(bank){
+      bankOptions += "<option value='" + bank + "'>" + bank + "</option>";   
     });
-    document.getElementById("currency").innerHTML = currencyOptions;
-    
-    if (window.methods[this.value]["bank_name_choices"] != null){
-      var bankOptions = "<option value='null'>Select</option>";
-      window.methods[this.value]["bank_name_choices"].sort().forEach(function(bank){
-        bankOptions += "<option value='" + bank + "'>" + bank + "</option>";   
-      });
-      document.getElementById("bank_name").innerHTML = bankOptions;   
-    }
-    else {
-      document.getElementById("bank_name").innerHTML = "<option value='null'>Not Available</option>";   
-    }
-    
+    document.getElementById("bank_name").innerHTML = bankOptions;   
+  }
+  else {
+    document.getElementById("bank_name").innerHTML = "<option value='null'>Not Available</option>";   
   };
+    
+};
+  
+
+/**
+ * Check for changes on margin and currency form fileds and update the price_preview disabled input.
+ */
+window.margingEquation = function(currency,margin){
+  return "BTC_in_USD*USD_in_" + currency + "*" + ((100 + parseInt(margin))/100)
+};
+  
+document.getElementById("price_equation").onchange = function(){
+  var margin = this.value;
+  var currency = document.getElementById("currency").value;
+  var equation = window.margingEquation(currency,margin);
+  google.script.run.withSuccessHandler(previewPrice).lbcEquation(equation);
+};
+  
+document.getElementById("currency").onchange = function(){
+  var currency = this.value;
+  if (document.getElementById("price_equation").value !== ""){    
+    var margin = document.getElementById("price_equation").value;
+    var equation = window.margingEquation(currency,margin);
+    google.script.run.withSuccessHandler(previewPrice).lbcEquation(equation);
+  }
+};
+  
+window.previewPrice = function(price){
+  document.getElementById("price_preview").value = price;   
+};
+  
+
+/**
+ * Open dialog for Localbitcoins advanced price formula.
+ */
+document.getElementById("advanced_price_internal").onclick = function(){
+  google.script.run.withSuccessHandler().showAdvancePriceInternalDialog();
+};  
 
 </script>
 
