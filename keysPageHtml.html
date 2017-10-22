@@ -1,0 +1,42 @@
+<?!= HtmlService.createHtmlOutputFromFile('css').getContent(); ?>
+ 
+<div class="sidebar">
+ 
+  <h2>New key/secret pair</h2>
+ 
+  <form id="saveKeyForm">
+ 
+    <div class="block form-group">
+      <label for="scope">Scope</label>
+      <select id="scope">
+        <option value="none">None</option>
+        <option value="read">Read</option>
+        <option value="readwrite">Read & Write</option>
+      </select>
+    </div>
+     
+    <div class="block form-group">
+      <label for="key">Key</label>
+      <input type="text" id="key">
+    </div>
+     
+    <div class="block form-group">
+      <label for="secret">Secret</label>
+      <input type="text" id="secret">
+    </div>
+     
+    <div class="block form-group">
+      <input type="button" class="action" value="Save" onmouseup="writeData()">
+      <input type="button" value="Clear" onmouseup="clearData()">
+    </div>
+     
+    <div class="block form-group" id="output"></div>
+ 
+  </form>
+ 
+</div>
+    
+<?!= HtmlService.createHtmlOutputFromFile('keysPageJs').getContent(); ?>
+    
+
+

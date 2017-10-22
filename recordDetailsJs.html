@@ -1,0 +1,86 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+  /**
+   * Run initializations on sidebar load.
+   */
+  $(function() {
+    // Assign handler functions to sidebar elements here, if needed.
+
+    // Call the server here to retrieve any information needed to build
+    // the dialog, if necessary.
+
+    // Start polling for updates        
+    poll();
+  });
+
+  /**
+   * Poll a server-side function at the given interval, to have
+   * results passed to a successHandler callback.
+   *
+   * https://stackoverflow.com/a/24773178/1677912
+   *
+   * @param {Number} interval   (optional) Time in ms between polls.
+   *                            Default is 2s (2000ms)
+   */
+  function poll(interval) {
+    interval = interval || 1000;
+    setTimeout(function() {
+      google.script.run
+        .withSuccessHandler(showRecord)
+        .withFailureHandler(
+          function(msg, element) {
+            showStatus(msg, $('#button-bar'));
+            element.disabled = false;
+          })
+        .getRecord();
+    }, interval);
+  };
+  
+  /**
+   * Callback function to display a "record", or row of the spreadsheet.
+   *
+   * @param {object[]}  Array of field headings & cell values
+   */
+  function showRecord(record) {
+    if (record.length) {
+      for (var i = 0; i < record.length; i++) {
+        // build field name on the fly, formatted field-1234
+        var str = '' + i;
+        var fieldId = 'field-' + ('0000' + str).substring(str.length)
+
+        // If this field # doesn't already exist on the page, create it
+        if (!$('#'+fieldId).length) {
+          var newField = $($.parseHTML('<div id="'+fieldId+'"></div>'));
+          $('#sidebar-record-block').append(newField);
+        }
+
+        // Replace content of the field div with new record
+        $('#'+fieldId).replaceWith('<div id="'+fieldId+'" class="div-table-row"></div>');
+        $('#'+fieldId).append($('<div class="div-table-th">' + record[i].heading + '</div>'))
+                      .append('<div class="div-table-td">' + record[i].cellval + '</div>');
+      }
+    }
+
+    // TODO: hide any existing fields that are beyond the current record length
+
+    //Setup the next poll
+    poll();
+  }
+
+  /**
+   * Displays the given status message in the sidebar.
+   *
+   * @param {String} msg The status message to display.
+   * @param {String} classId The message type (class id) that the message
+   *   should be displayed as.
+   */
+  function showStatus(msg, classId) {
+    $('#sidebar-status').removeClass().html(msg);
+    if (classId) {
+      $('#sidebar-status').addClass(classId);
+    }
+  }
+
+</script>
+
+

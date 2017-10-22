@@ -1,0 +1,17 @@
+<!-- Use a templated HTML printing scriptlet to import common stylesheet. -->
+<?!= HtmlService.createHtmlOutputFromFile('css').getContent(); ?>
+
+<!-- Below is the HTML code that defines the sidebar element structure. -->
+<div class="sidebar branding-below">
+  <h1>Title</h1>
+  <!-- The div-table class is used to make a group of divs behave like a table. -->
+  <div class="block div-table" id="sidebar-record-block"></div>
+  <div class="block" id="sidebar-button-bar"></div>
+  <div id="sidebar-status"></div>
+</div>
+
+<div class="sidebar bottom"></div>
+
+<!-- Use a templated HTML printing scriptlet to import JavaScript. -->
+<?!= HtmlService.createHtmlOutputFromFile('recordDetailsJs').getContent(); ?>
+

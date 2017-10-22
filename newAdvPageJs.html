@@ -1,0 +1,53 @@
+<script>
+  window.onload = function(){
+    google.script.run.withSuccessHandler(setMethodOptions).lbcPaymentMethods("client");
+    google.script.run.withSuccessHandler(setCountries).getCountries("client");
+  };
+  
+  window.setCountries = function(countries){
+    var countryOptions = "<option value='null'>Select</option>";
+    Object.keys(countries).sort().forEach(function(country){
+      countryOptions += "<option value='" + countries[country]["code"] + "'>" + countries[country]["code"] + " " + countries[country]["name"] + "</option>";   
+    })
+    document.getElementById("countrycode").innerHTML = countryOptions;
+  };
+  
+  window.setMethodOptions = function(methods){
+    window.methods = methods;
+    var methodOptions = "<option value='null'>Select</option>";
+    Object.keys(methods).sort().forEach(function(method){
+      methodOptions += "<option value='" + methods[method]["code"] + "'>" + methods[method]["name"] + "</option>";   
+    })
+    document.getElementById("online_provider").innerHTML = methodOptions;
+  };
+  
+  
+  document.getElementById("showAdvancePriceDialog").onclick = function(){
+    google.script.run.withSuccessHandler().showAdvancePriceDialog();
+  }
+  
+  
+  document.getElementById("online_provider").onchange = function(){
+      
+    var currencyOptions = "<option value=''>Select</option>";
+      window.methods[this.value]["currencies"].sort().forEach(function(method){
+      currencyOptions += "<option value='" + method + "'>" + method + "</option>";   
+    });
+    document.getElementById("currency").innerHTML = currencyOptions;
+    
+    if (window.methods[this.value]["bank_name_choices"] != null){
+      var bankOptions = "<option value='null'>Select</option>";
+      window.methods[this.value]["bank_name_choices"].sort().forEach(function(bank){
+        bankOptions += "<option value='" + bank + "'>" + bank + "</option>";   
+      });
+      document.getElementById("bank_name").innerHTML = bankOptions;   
+    }
+    else {
+      document.getElementById("bank_name").innerHTML = "<option value='null'>Not Available</option>";   
+    }
+    
+  };
+
+</script>
+
+

@@ -1,0 +1,26 @@
+<script>
+
+window.clearData = function() {
+  var form = document.getElementById('keyForm');
+  form.scope.value = "none";
+  form.key.value = "";
+  form.secret.value = "";
+};
+
+window.writeData = function() {
+  var form = document.getElementById('saveKeyForm');
+  google.script.run.withSuccessHandler(onSuccess).saveHmacKey(form.scope.value,form.key.value,form.secret.value);
+};
+
+window.onSuccess = function(){
+  var output = document.getElementById("output")
+  output.innerHTML = "HMAC key and secret saved";
+  setTimeout(function() {
+    window.clearData()
+    output.innerHTML = ""
+  }, 1000);
+};
+
+</script>
+
+

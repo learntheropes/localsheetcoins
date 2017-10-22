@@ -1,0 +1,69 @@
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+
+  <form id="newPriceForm">
+  
+    <div class="block form-group">
+      <label for="price_equation">Price Equation</label>
+      <input type="text" id="price_equation" style="width: 250px;">
+      <p>You can type the equation or use the dropdown to insert the exchanges tickers and operators.</p>
+    </div>
+  
+    <div class="block form-group">
+    
+      <div class="inline form-group">
+        <label for="ticker">Tickers</label>
+        <select id="ticker" class="formula_input" style="width: 150px;">
+          <option value="null">Select</option>       
+        </select> 
+      </div>
+      <div class="inline form-group">
+        <label for="operator">Operators</label>
+        <select class="formula_input" id="operator" style="width: 150px;">
+          <option value="null">Select</option>
+          <option value="+">+</option>
+          <option value="-">-</option>
+          <option value="*">*</option>
+          <option value="/">/</option>
+          <option value="min(  ,  )">min</option>
+          <option value="max(  ,  )">max</option>
+          <option value="trunc(  )">trunc</option>
+          <option value="ceil(  )">ceil</option>
+          <option value="floor(  )">floor</option>
+          <option value="round(  )">round</option>
+          <option value="(  )">( )</option>
+        </select> 
+      </div>
+    </div>
+    
+    <div class="block form-group">
+      <input type="button" class="action" value="Save" onmouseup="saveNewAdv()">
+      <input type="button" value="Clear" onclick="google.script.host.close()" />
+      <input type="button" value="Close" onclick="google.script.host.close()" />
+    </div>
+    
+  </form>
+
+<script>
+
+
+window.onload = function(){
+  google.script.run.withSuccessHandler(setTickersOptions).makeAllTickers();
+};
+
+window.setTickersOptions = function(tickers){
+  var tickersOptions = "<option value='null'>Select</option>";
+  tickers.sort().forEach(function(ticker){
+    tickersOptions += "<option value='" + ticker + "'>" + ticker + "</option>";   
+  })
+  document.getElementById("ticker").innerHTML = tickersOptions;
+};
+
+document.getElementById('ticker').onchange = function(){
+  document.getElementById("price_equation").value = document.getElementById("price_equation").value + " " + this.value + " ";
+}
+
+document.getElementById('operator').onchange = function(){
+  document.getElementById("price_equation").value = document.getElementById("price_equation").value + " " + this.value + " ";
+}
+
+</script>

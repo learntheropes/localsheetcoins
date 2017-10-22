@@ -1,0 +1,119 @@
+<?!= HtmlService.createHtmlOutputFromFile('css').getContent(); ?>
+ 
+<div class="sidebar">
+ 
+  <form id="newAdvForm">
+  
+    <h2>General Settings</h2>
+  
+    <div class="block form-group">
+      <div class="inline form-group">    
+        <label for="trade_type">Type</label>
+        <select id="trade_type" style="width: 80px;">
+          <option value="null">Select</option>
+          <option value="ONLINE_BUY">Buy</option>
+          <option value="ONLINE_SELL">Sell</option>
+        </select>
+      </div>
+      <div class="inline form-group">
+        <label for="online_provider">Payment Method</label>
+        <select id="online_provider" style="width: 150px;">
+          <option value="null">Select</option>
+        </select>
+      </div> 
+    </div>
+
+    <div class="block form-group">
+      <div class="inline form-group">
+        <label for="currency">Currency</label>
+        <select id="currency" style="width: 80px;">
+          <option value="null">Select</option>
+        </select>
+      </div>
+      <div class="inline form-group">
+       <label for="bank_name">Detailed Method</label>
+       <select id="bank_name" style="width: 150px;">
+         <option value="null">Not Available</option>
+       </select>
+      </div> 
+    </div>
+    
+    <div class="block form-group">
+      <label for="countrycode">Country</label>
+      <select id="countrycode" style="width: 250px;">
+        <option value="null">Select</option>
+      </select>
+    </div>
+
+    <h2>Price and Limits</h2>
+    
+    <div class="block form-group">
+      <div class="inline form-group">    
+        <label for="price_equation">Margin [%]</label>
+        <input type="text" id="price_equation" style="width: 80px;">
+      </div>
+      <div class="inline form-group">
+        <label for="showAdvancePriceDialog">Advanced</label>
+        <input type="button" value="Advance Price Equation" id="showAdvancePriceDialog" style="width: 150px;">
+      </div>        
+    </div>
+      
+    <div class="block form-group">
+      <div class="inline form-group">
+        <label for="min_amount">Min Trade Limit</label>
+        <input type="text" id="min_amount" style="width: 115px;">
+      </div>
+      <div class="inline form-group">
+        <label for="max_amount">Max Trade Limit</label>
+        <input type="text" id="max_amount" style="width: 115px;">
+      </div>
+    </div>
+    
+    <div class="block form-group">
+      <label for="limit_to_fiat_amounts">Restrict Amounts</label>
+      <input type="text" id="limit_to_fiat_amounts" style="width: 250px;">
+    </div>
+
+    <h2>Terms of Trade</h2>
+    
+    <div class="block form-group">
+      <label for="msg">Description (public)</label>
+      <textarea id="msg" rows="5" style="width: 250px;"></textarea>
+    </div>
+    
+    <div class="block form-group">
+      <label for="account_info">Payment details (private)</label>
+      <textarea id="account_info" rows="5" style="width: 250px;"></textarea>
+    </div>
+    
+    <h2>Filters</h2>
+
+    <div class="block form-group">
+      <div>
+        <input type="checkbox" id="sms_verification_required">
+        <label for="sms_verification_required">Phone verified</label>
+      </div>
+      <div>
+        <input type="checkbox" id="require_identification">
+        <label for="require_identification">ID verified</label>
+      </div>
+      <div>
+        <input type="checkbox" id="require_trusted_by_advertiser">
+        <label for="require_trusted_by_advertiser">Trusted users</label>
+      </div>
+     </div>
+       
+     <div class="block form-group">
+       <input type="button" class="action" value="Submit" onmouseup="saveNewAdv()">
+       <input type="button" value="Clear" onmouseup="clearData()">
+     </div>
+    
+    <div class="block form-group" id="output"></div>
+ 
+  </form>
+ 
+</div>
+    
+<?!= HtmlService.createHtmlOutputFromFile('newAdvPageJs').getContent(); ?>
+
+
