@@ -20,7 +20,7 @@ function onInstall(e) {
  * Open the HMAC settings sidebar. The sidebar structure is described in the HmacKeysPage.html project file.
  */
 function showKeyPage() {   
-  var ui = HtmlService.createTemplateFromFile('HmacKeysPage')
+  var ui = HtmlService.createTemplateFromFile('hmacKeysPage')
     .evaluate()
     .setSandboxMode(HtmlService.SandboxMode.IFRAME)
     .setTitle('Manage keys');
@@ -31,16 +31,10 @@ function showKeyPage() {
  * Save HMAC keys and secrets in the user properties.
  */
 function saveHmacKey(scope,key,secret) {
-  userProperties.setProperty("lbcHmac_key_" + scope, key);
+  var userProperties = PropertiesService.getUserProperties();
+  UserProperties.setProperty("lbcHmac_key_" + scope, key);
   userProperties.setProperty("lbcHmac_secret_" + scope, secret);
 };
-
-/**
- * Shortcut for the user properties.
- */
-var userProperties = PropertiesService.getUserProperties();
-
-
 
 /**
  * New advertisement related functions.

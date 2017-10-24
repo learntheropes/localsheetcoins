@@ -5,24 +5,9 @@ function fetchLog_(request){
   Logger.log("Content: " + request.getContentText());
 }
 
-function isCellOrNot(){
-  var activeCell = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getActiveCell().getA1Notation();
-  Logger.log(JSON.stringify(activeCell))
-  return JSON.stringify(activeCell);
+function activeCellA1(){
+  return SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getActiveCell().getA1Notation();
 }
-
-
-function sortObjectByKey_(object,key){
-  object.sort(function(a, b){
-    var nameA=a[key].toLowerCase(), nameB=b[key].toLowerCase()
-    if (nameA < nameB)
-        return -1 
-    if (nameA > nameB)
-        return 1
-    return 0
-  })
-}
-
 
 function isNotInArray_(value, array) {
   return array.indexOf(value) === -1;
@@ -39,22 +24,29 @@ function writeArrayToColumn_(array,sheet,column){
   SpreadsheetApp.getActive().getSheetByName(sheet).getRange(2,column,array.length,1).setValues(array2d);
 }
 
-function writeJsonToArrays_(data){
-  var results = []; var keys = []; var values = [];
-  for (var i in data){
-    for (var key in data[i]){
-      if (i == 0) keys.push(key);
-      values.push(data[i][key]);
-    }
-    if (i == 0){
-      results.push(keys);
-      keys = [];
-    }
-    results.push(values);
-    values = [];
-  }
-  return results;
-};
+function elementHash(input, callback){
+  var output = Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, JSON.stringify(input));
+  callback(hexdigest_(output));
+}
+
+function sortObjectByKey_(object){
+  const ordered = {};
+  Object.keys(object).sort().forEach(function(key) {
+      ordered[key] = object[key];
+  });
+  return ordered
+}
+
+function sortArrayByKey_(array,key){
+  array.sort(function(a, b){
+    var keyA = a[key.toString()];
+    var keyB = b[key.toString()];
+    if (keyA < keyB) return -1 
+    if (keyA > keyB) return 1
+    return 0
+  })
+}
+
 
 function getCaller_(){
   var stack; var ret = [];
