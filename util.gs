@@ -13,7 +13,7 @@ function isNotInArray_(value, array) {
   return array.indexOf(value) === -1;
 }
 
-function saveToRow_(sheet_name,array){
+function writeToRow_(sheet_name,array){
  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheet_name);
  sheet.appendRow(array);
 }

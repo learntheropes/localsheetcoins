@@ -12,6 +12,17 @@ function getPayloadEncoded_(payload){
   }).join('&');
 }
 
+function getPayloadDecoded_(string){
+  if (string. indexOf("?") >= 0) var string = string.split("?")[1];
+  var string = decodeURIComponent(string);
+  var string = JSON.parse('{"' + decodeURI(string).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}');
+  var payload = {}
+  Object.keys(string).forEach(function(key){
+    payload[key] = encodeURIComponent(string[key]);
+  });
+  return payload;
+}
+
 
 function hexdigest_(sign){
   return sign.map(function(byte) {
@@ -21,10 +32,10 @@ function hexdigest_(sign){
 
 
 function lbcRequest_(scope, method, endpoint, payload) {
+  var payload = payload || {};
+  var payloadEncoded = getPayloadEncoded_(payload)
   if (scope !== "none") {
     var hmac = getHmac_(scope);
-    if (payload) {var payloadEncoded = getPayloadEncoded_(payload)}
-    else {var payloadEncoded = ""};
     var nonce = (new Date).getTime().toString();
     var message = nonce.concat(hmac.key).concat(endpoint).concat(payloadEncoded);
     var sign = Utilities.computeHmacSha256Signature(message, hmac.secret, Utilities.Charset.UTF_8);
@@ -42,19 +53,20 @@ function lbcRequest_(scope, method, endpoint, payload) {
     "headers": headers,
     "payload": payloadEncoded
   }
-  var request = UrlFetchApp.fetch("https://localbitcoins.com".concat(endpoint), options); 
-  var response = {
-    statusCode: request.getResponseCode(),
-    content: JSON.parse(request.getContentText()),
-    pagination: JSON.parse(request.getContentText()).pagination
-  };
-  return response;
+  var request = UrlFetchApp.fetch("https://localbitcoins.com".concat(endpoint).concat("?" + payloadEncoded), options);
+  if (request.getResponseCode() === 200) {
+    var response = JSON.parse(request.getContentText("UTF-8"));
+    return response
+  }
+  else{
+    fetchLog_(request);
+  }
 }
 
 
-function returnSheetOrJson_(inputs,client){
+function returnSheetOrJson_(inputs,isNext){
   if (typeof client === 'undefined' || !isNaN(client)){
-    var finals = ifSheet_(inputs);
+    var finals = ifSheet_(inputs,isNext);
   }
   else {
     var finals = ifJson_(inputs);
@@ -74,11 +86,24 @@ function ifJson_(inputs){
 }
 
 
-function ifSheet_(inputs){
+function ifSheet_(inputs,isNext){
   var final = cleanSortedNormalizedArray(inputs)
-  return writeJsonToArrays_(final)
+  writeToSheet_("Trades Released",final,next);
 }
 
+function writeToSheet_(sheet_name,array,isNext){
+  if (typeof isNext === "undefined"){  
+    var keysRow = Object.keys(array[0]);
+    writeToRow_(sheet_name,keysRow);
+  } 
+  array.forEach(function(object){
+    var valuesRow = [];
+    Object.keys(object).forEach(function(key){
+      valuesRow.push(object[key])
+    });
+    writeToRow_(sheet_name,valuesRow);
+  });
+}
 
 function cleanSortedNormalizedArray(obj){
   var cleanObjects = cleanNullValuesInJson(obj);

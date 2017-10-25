@@ -26,9 +26,9 @@ function lbcCountryCodes(){
 /**
  * ADVERTISEMENTS api methods.
  */
-function lbcMyAds(client){
-  var response = lbcRequest_("read", "get", "/api/ads/").content.data.ad_list;
-  var outputs = returnSheetOrJson_(response,client);
+function lbcMyAds(payload){
+  var response = lbcRequest_("read", "get", "/api/ads/").data.ad_list;
+  var outputs = returnSheetOrJson_(response);
   return outputs;
 }
 
@@ -36,7 +36,7 @@ function lbcConact(contact_id){
 var contact_id = "2580931"
   var response = lbcRequest_("read", "get", "/api/contact_info/" + contact_id + "/").content.data;
   var temp = JSON.stringify(response, replacer);
-var response = JSON.parse(temp)
+  var response = JSON.parse(temp);
 
 }
 
@@ -53,10 +53,12 @@ function advGet(id){
   var response = lbcRequest_("read", "get", "/api/ad-get/" + id + "/");
 }
 
-function lbcReleased(client){
-  var response = lbcRequest_("read", "get", "/api/dashboard/released/").content.data.contact_list;
-  var outputs = returnSheetOrJson_(response);
-  return outputs;
+function lbcReleasedAll(payload,isNext){
+  var response = lbcRequest_("read", "get", "/api/dashboard/released/");
+  var content = response.data.contact_list
+  var pagination = response.pagination
+  returnSheetOrJson_(content,pagination,isNext);
+  if (pagination) lbcClosedAll(getPayloadDecoded_(pagination.next),true);
 }
 
 
